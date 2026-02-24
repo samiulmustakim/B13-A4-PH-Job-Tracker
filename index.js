@@ -1,6 +1,6 @@
 let interviewList = [];
 let rejectedlist = [];
-let currentStatus = 'all'
+let currentStatus = 'allJobsBtn'
 
 const allJobsBtn = document.getElementById("allJobsBtn");
 const interviewJobsBtn = document.getElementById("interviewJobsBtn");
@@ -40,11 +40,19 @@ function toggleStyle(id) {
   } else if (id == "allJobsBtn") {
     allCardSection.classList.remove("hidden");
     filterSection.classList.add("hidden");
+
+    if (allCardSection.children.length === 0) {
+      filterSection.classList.remove('hidden')
+      allCardSection.classList.add('hidden')
+      emptyMessage()
+    }
+
   } else if (id == "rejectedJobsBtn") {
     allCardSection.classList.add("hidden");
     filterSection.classList.remove("hidden");
     renderReject();
   }
+  calculateCount()
 }
 
 // Jobs Count  Jobs Count  Jobs Count Jobs Count Jobs Count Jobs Count
@@ -52,8 +60,16 @@ function calculateCount() {
   const total = allCardSection.children.length;
   interviewCount.innerText = interviewList.length;
   totalCount.innerText = total;
-  jobNumber.innerText = total;
   rejectedCount.innerText = rejectedlist.length;
+
+  if (currentStatus === 'allJobsBtn') {
+    jobNumber.innerText = total
+  }
+  else if (currentStatus === 'interviewJobsBtn') {
+    jobNumber.innerText = `${interviewList.length} of ${total}`
+  } else if (currentStatus === 'rejectedJobsBtn') {
+    jobNumber.innerText = `${rejectedlist.length} of ${total}`
+  }
 }
 calculateCount();
 
@@ -164,6 +180,12 @@ mainContainer.addEventListener("click", (e) => {
     
     parenNode.remove()
 
+    if (allCardSection.children.length === 0 && currentStatus === 'allJobsBtn') {
+      allCardSection.classList.add('hidden')
+      filterSection.classList.remove('hidden')
+      emptyMessage()
+    }
+
     if (currentStatus === "interviewJobsBtn") {
     renderInterView();
     } 
@@ -178,6 +200,11 @@ mainContainer.addEventListener("click", (e) => {
 // renderInterView renderInterView renderInterView renderInterView
 function renderInterView() {
   filterSection.innerHTML = "";
+
+  if (interviewList.length === 0) {
+    emptyMessage()
+    return;
+  }
 
   for (let interView of interviewList) {
     let div = document.createElement("div");
@@ -207,6 +234,11 @@ function renderInterView() {
 function renderReject() {
   filterSection.innerHTML = "";
 
+  if (rejectedlist.length === 0) {
+    emptyMessage();
+    return
+  }
+
   for (let reject of rejectedlist) {
     let div = document.createElement("div");
     div.className =
@@ -230,3 +262,16 @@ function renderReject() {
     filterSection.append(div);
   }
 }
+
+// Empty Empty Empty Empty  Empty Empty
+function emptyMessage() {
+  filterSection.innerHTML =`<div class="flex flex-col justify-center text-center items-center bg-[#ffffff] shadow-sm rounded-md py-26 mt-12">
+                <img class="w-[100px]" src="./jobs.png" alt="">
+                <p class="text-2xl font-semibold text-[#002c5c]">No jobs available</p>
+                <p class="text-gray-600">Check back soon for new job opportunities</p>
+            </div>`
+
+}
+
+
+
